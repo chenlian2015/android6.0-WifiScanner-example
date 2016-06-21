@@ -47,6 +47,8 @@ public class MainActivity extends Activity  {
 
         }
 
+        initView();
+
     }
 
     String password = "xinyuan1997";

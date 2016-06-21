@@ -10,6 +10,7 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+        manifestPlaceholders = [ CHANNEL_NAME:"Unspecified"]
     }
     buildTypes {
         release {
@@ -17,6 +18,24 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    productFlavors {
+        yingyongbao {
+            manifestPlaceholders = [ CHANNEL_NAME:"YINGYONGBAO"]
+        }
+        umeng {
+            manifestPlaceholders = [ CHANNEL_NAME:"UMENG" ]
+        }
+        wandoujia {
+            manifestPlaceholders = [ CHANNEL_NAME:"WANDOUJIA" ]
+        }
+
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
 }
 
 dependencies {
