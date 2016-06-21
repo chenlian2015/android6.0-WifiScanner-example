@@ -8,11 +8,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.wifi.ScanResult;
+import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import java.util.List;
@@ -32,8 +35,40 @@ public class MainActivity extends Activity  {
         if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
+        else {
 
 
+            wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+            wifiReciever = new WifiScanReceiver();
+            registerReceiver(wifiReciever, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+            wifi.startScan();
+
+
+
+        }
+
+    }
+
+    String password = "xinyuan1997";
+
+    private void connectOneOfScanedResult(String wifiName, String passWord)
+    {
+        WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        // setup a wifi configuration
+        WifiConfiguration wc = new WifiConfiguration();
+        wc.SSID = "\""+wifiName+"\"";
+        wc.preSharedKey = "\""+passWord+"\"";
+        wc.status = WifiConfiguration.Status.ENABLED;
+        wc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
+        wc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
+        wc.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
+        wc.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
+        wc.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
+        wc.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
+        // connect to and enable the connection
+        int netId = wifiManager.addNetwork(wc);
+        wifiManager.enableNetwork(netId, true);
+        wifiManager.setWifiEnabled(true);
     }
 
     protected void onPause() {
@@ -74,6 +109,20 @@ public class MainActivity extends Activity  {
         }
     }
 
+    public void initView()
+    {
+        EditText etName = (EditText) findViewById(R.id.id_et_name);
+        final String wifiName = etName.getText().toString();
+        EditText etPassword = (EditText) findViewById(R.id.id_et_password);
+        final String wifiPassword = etPassword.getText().toString();
+
+        findViewById(R.id.id_bt_connect_wifi).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.this.connectOneOfScanedResult(wifiName, wifiPassword);
+            }
+        });
+    }
     private class WifiScanReceiver extends BroadcastReceiver{
         public void onReceive(Context c, Intent intent) {
             List<ScanResult> wifiScanList = wifi.getScanResults();
@@ -81,7 +130,9 @@ public class MainActivity extends Activity  {
 
             for(int i = 0; i < wifiScanList.size(); i++){
                 wifis[i] = ((wifiScanList.get(i)).toString());
+
             }
+
             lv.setAdapter(new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_list_item_1,wifis));
         }
     }
