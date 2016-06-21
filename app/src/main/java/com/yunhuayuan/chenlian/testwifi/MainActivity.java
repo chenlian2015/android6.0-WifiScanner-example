@@ -3,20 +3,24 @@ package com.yunhuayuan.chenlian.testwifi;
 import android.Manifest;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -49,6 +53,8 @@ public class MainActivity extends Activity  {
 
         initView();
 
+        initChannelName();
+
     }
 
     String password = "xinyuan1997";
@@ -71,6 +77,20 @@ public class MainActivity extends Activity  {
         int netId = wifiManager.addNetwork(wc);
         wifiManager.enableNetwork(netId, true);
         wifiManager.setWifiEnabled(true);
+    }
+
+    public void initChannelName()
+    {
+
+        try {
+            ApplicationInfo ai = this.getPackageManager().getApplicationInfo("com.yunhuayuan.chenlian.testwifi", PackageManager.GET_META_DATA);
+            String channelName = ai.metaData.getString("UMENG_CHANNEL");
+            TextView tv = (TextView) findViewById(R.id.id_tv_channel_name);
+            tv.setText(channelName);
+        }catch (Exception e)
+        {
+            Log.e("MainA", e.toString());
+        }
     }
 
     protected void onPause() {

@@ -10,12 +10,32 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
-        manifestPlaceholders = [ CHANNEL_NAME:"Unspecified"]
+        manifestPlaceholders = [ CHANNEL_NAME:"hahaha"]
+
+        archivesBaseName = "MyCompany-MyAppName-$versionName"
     }
+
+    signingConfigs {
+        myconfig {
+            keyAlias 'chenlian.keystore'
+            keyPassword '123456'
+            storeFile file('/Users/chenlian/Downloads/chenlian.keystore.jks')
+            storePassword '123456'
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
+            signingConfig signingConfigs.myconfig
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            applicationVariants.all { variant ->
+                variant.outputs.each { output ->
+                    output.outputFile = new File(
+                            output.outputFile.parent,
+                            output.outputFile.name.replace(".apk", "-${variant.versionName}.apk"))
+                }
+            }
         }
     }
 
@@ -23,12 +43,13 @@ android {
         yingyongbao {
             manifestPlaceholders = [ CHANNEL_NAME:"YINGYONGBAO"]
         }
+        andoujia {
+            manifestPlaceholders = [ CHANNEL_NAME:"ANDOUJIA" ]
+        }
         umeng {
-            manifestPlaceholders = [ CHANNEL_NAME:"UMENG" ]
+            manifestPlaceholders = [ CHANNEL_NAME:"UMENGx" ]
         }
-        wandoujia {
-            manifestPlaceholders = [ CHANNEL_NAME:"WANDOUJIA" ]
-        }
+
 
     }
 
