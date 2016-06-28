@@ -37,7 +37,7 @@ public class MainActivity extends Activity  {
         lv=(ListView)findViewById(R.id.listView);
 
         if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_WIFI_STATE,Manifest.permission.CHANGE_WIFI_STATE, Manifest.permission.CHANGE_NETWORK_STATE,Manifest.permission.ACCESS_NETWORK_STATE}, 1);
         }
         else {
 
@@ -61,22 +61,36 @@ public class MainActivity extends Activity  {
 
     private void connectOneOfScanedResult(String wifiName, String passWord)
     {
-        WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+
+
+        wifi.setWifiEnabled(true);
         // setup a wifi configuration
         WifiConfiguration wc = new WifiConfiguration();
+
+        List lst = wifi.getConfiguredNetworks();
+
+
         wc.SSID = "\""+wifiName+"\"";
         wc.preSharedKey = "\""+passWord+"\"";
-        wc.status = WifiConfiguration.Status.ENABLED;
-        wc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
-        wc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
-        wc.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
-        wc.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
-        wc.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
+
+        wc.status = WifiConfiguration.Status.DISABLED;
+        wc.priority = 40;
         wc.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
+        wc.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
+        wc.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
+        wc.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
+        wc.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
+        wc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
+        wc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104);
+        wc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
+        wc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
+
         // connect to and enable the connection
-        int netId = wifiManager.addNetwork(wc);
-        wifiManager.enableNetwork(netId, true);
-        wifiManager.setWifiEnabled(true);
+        int netId = wifi.addNetwork(wc);
+
+        boolean bEnabledNet = wifi.enableNetwork(netId, true);
+        boolean bConnect =  wifi.reconnect();
+        wifi.setWifiEnabled(true);
     }
 
     public void initChannelName()
@@ -133,14 +147,17 @@ public class MainActivity extends Activity  {
 
     public void initView()
     {
-        EditText etName = (EditText) findViewById(R.id.id_et_name);
-        final String wifiName = etName.getText().toString();
-        EditText etPassword = (EditText) findViewById(R.id.id_et_password);
-        final String wifiPassword = etPassword.getText().toString();
+
 
         findViewById(R.id.id_bt_connect_wifi).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                EditText etName = (EditText) findViewById(R.id.id_et_name);
+                final String wifiName = etName.getText().toString();
+                EditText etPassword = (EditText) findViewById(R.id.id_et_password);
+                final String wifiPassword = etPassword.getText().toString();
+
                 MainActivity.this.connectOneOfScanedResult(wifiName, wifiPassword);
             }
         });
@@ -150,8 +167,11 @@ public class MainActivity extends Activity  {
             List<ScanResult> wifiScanList = wifi.getScanResults();
             wifis = new String[wifiScanList.size()];
 
+
             for(int i = 0; i < wifiScanList.size(); i++){
                 wifis[i] = ((wifiScanList.get(i)).toString());
+                ScanResult sr = wifiScanList.get(i);
+
 
             }
 
