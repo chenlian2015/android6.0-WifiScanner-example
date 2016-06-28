@@ -62,7 +62,7 @@ public class MainActivity extends Activity  {
     private void connectOneOfScanedResult(String wifiName, String passWord)
     {
 
-
+        beforeOpenDoorWifi = wifi.getConnectionInfo().getNetworkId();
         wifi.setWifiEnabled(true);
         // setup a wifi configuration
         WifiConfiguration wc = new WifiConfiguration();
@@ -145,6 +145,7 @@ public class MainActivity extends Activity  {
         }
     }
 
+    private int beforeOpenDoorWifi = -1;
     public void initView()
     {
 
@@ -159,6 +160,14 @@ public class MainActivity extends Activity  {
                 final String wifiPassword = etPassword.getText().toString();
 
                 MainActivity.this.connectOneOfScanedResult(wifiName, wifiPassword);
+            }
+        });
+
+        findViewById(R.id.enable_last_wift).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                wifi.enableNetwork(beforeOpenDoorWifi, true);
             }
         });
     }

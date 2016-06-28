@@ -57,6 +57,12 @@
         android:layout_height="60dip"
         android:text="connect wifi" />
 
+    <Button
+        android:id="@+id/enable_last_wift"
+        android:layout_width="match_parent"
+        android:layout_height="60dip"
+        android:text="connect wifi" />
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
