@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class MainActivity extends Activity  {
@@ -59,6 +60,21 @@ public class MainActivity extends Activity  {
 
     String password = "xinyuan1997";
 
+    private void enableWifi(String wifiName)
+    {
+        List<WifiConfiguration> lst =  wifi.getConfiguredNetworks();
+        Iterator<WifiConfiguration> it = lst.iterator();
+        while (it.hasNext())
+        {
+            WifiConfiguration wc = it.next();
+            if(wc.SSID.equals("\""+wifiName+"\""))
+            {
+                wifi.enableNetwork(wc.networkId, true);
+                break;
+            }
+        }
+    }
+
     private void connectOneOfScanedResult(String wifiName, String passWord)
     {
 
@@ -86,11 +102,19 @@ public class MainActivity extends Activity  {
         wc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
 
         // connect to and enable the connection
-        int netId = wifi.addNetwork(wc);
 
-        boolean bEnabledNet = wifi.enableNetwork(netId, true);
-        boolean bConnect =  wifi.reconnect();
-        wifi.setWifiEnabled(true);
+        int netId = wifi.addNetwork(wc);
+        if(-1 == netId)
+        {
+            enableWifi(wifiName);
+        }
+        else
+        {
+            boolean bEnabledNet = wifi.enableNetwork(netId, true);
+            boolean bConnect =  wifi.reconnect();
+            wifi.setWifiEnabled(true);
+        }
+
     }
 
     public void initChannelName()
